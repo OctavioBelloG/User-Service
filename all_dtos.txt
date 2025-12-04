@@ -1,0 +1,505 @@
+-- FILE: AppointmentRequest.java
+package com.example.dto;
+
+import java.sql.Timestamp;
+
+import lombok.Data;
+
+@Data
+public class AppointmentRequest {
+    private Long patientId;
+    private Long doctorId;
+    private Long scheduleId;
+    private Timestamp date;
+    private String consultationType;
+    private String status;
+}
+
+-- FILE: AppointmentResponse.java
+package com.example.dto;
+
+import java.sql.Timestamp;
+
+import lombok.Builder;
+import lombok.Data;
+
+@Data
+@Builder
+public class AppointmentResponse {
+    private Long appointmentId;
+    private Long patientId;
+    private Long doctorId;
+    private Long scheduleId;
+    private Timestamp date;
+    private String consultationType;
+    private String status;
+}
+
+-- FILE: DoctorRequest.java
+package com.example.dto;
+
+import java.math.BigDecimal;
+
+import lombok.Data;
+
+@Data
+public class DoctorRequest {
+    private Long userId;
+    private Long specialtyId;
+    private String fullName;
+    private String registrationNumber;
+    private BigDecimal rating;
+}
+
+-- FILE: DoctorResponse.java
+package com.example.dto;
+
+import java.math.BigDecimal;
+
+import lombok.Builder;
+import lombok.Data;
+
+@Data
+@Builder
+public class DoctorResponse {
+    private Long doctorId;
+    private Long userId;
+    private Long specialtyId;
+    private String fullName;
+    private String registrationNumber;
+    private BigDecimal rating;
+}
+
+-- FILE: MedicalInsuranceRequest.java
+package com.example.dto;
+
+import java.sql.Date;
+
+import lombok.Data;
+
+@Data
+public class MedicalInsuranceRequest {
+    private Long patientId;
+    private String policyNumber;
+    private String company;
+    private String coverage;
+    private Date expirationDate;
+}
+
+-- FILE: MedicalInsuranceResponse.java
+package com.example.dto;
+
+import java.sql.Date;
+
+import lombok.Builder;
+import lombok.Data;
+
+@Data
+@Builder
+public class MedicalInsuranceResponse {
+    private Long insuranceId;
+    private Long patientId;
+    private String policyNumber;
+    private String company;
+    private String coverage;
+    private Date expirationDate;
+}
+
+-- FILE: MedicalRecordRequest.java
+package com.example.dto;
+
+import java.sql.Timestamp;
+
+import lombok.Data;
+
+@Data
+public class MedicalRecordRequest {
+    private Long patientId;
+    private String allergies;
+    private String vaccines;
+    private String medicalHistory;
+    private String notes;
+    private Timestamp lastUpdated;
+}
+
+-- FILE: MedicalRecordResponse.java
+package com.example.dto;
+
+import java.sql.Timestamp;
+
+import lombok.Builder;
+import lombok.Data;
+
+@Data
+@Builder
+public class MedicalRecordResponse {
+    private Long recordId;
+    private Long patientId;
+    private String allergies;
+    private String vaccines;
+    private String medicalHistory;
+    private String notes;
+    private Timestamp lastUpdated;
+}
+
+-- FILE: ScheduleRequest.java
+package com.example.dto;
+
+import java.sql.Time;
+
+import lombok.Data;
+
+@Data
+public class ScheduleRequest {
+    private Long doctorId;
+    private String dayOfWeek;
+    private Time startTime;
+    private Time endTime;
+}
+
+-- FILE: ScheduleResponse.java
+package com.example.dto;
+
+import java.sql.Time;
+
+import lombok.Builder;
+import lombok.Data;
+
+@Data
+@Builder
+public class ScheduleResponse {
+    private Long scheduleId;
+    private Long doctorId;
+    private String dayOfWeek;
+    private Time startTime;
+    private Time endTime;
+}
+
+-- FILE: SpecialtyRequest.java
+package com.example.dto;
+
+import lombok.Data;
+
+@Data
+public class SpecialtyRequest {
+    private String name;
+    private String description;
+}
+
+-- FILE: SpecialtyResponse.java
+package com.example.dto;
+
+import lombok.Builder;
+import lombok.Data;
+
+@Data
+@Builder
+public class SpecialtyResponse {
+    private Long specialtyId;
+    private String name;
+    private String description;
+}
+
+-- FILE: VideoCallRequest.java
+package com.example.dto;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.Data;
+
+@Data
+public class VideoCallRequest {
+    @NotBlank
+    private String link;
+
+    @Size(max = 50)
+    private String provider;
+
+    @NotBlank
+    @Size(max = 20)
+    private String status;
+}
+
+-- FILE: VideoCallResponse.java
+package com.example.dto;
+
+import lombok.Builder;
+import lombok.Value;
+
+@Value
+@Builder
+public class VideoCallResponse {
+    Long videoCallId;
+    Long appointmentId;
+    String link;
+    String provider;
+    String status;
+}
+
+-- FILE: UserRequest.java
+package com.example.dto;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Builder;
+import lombok.Value;
+
+@Value
+@Builder
+public class UserRequest {
+    @JsonProperty("User Name")
+    String userName;
+    String email;
+    String password;
+    Long roleId;
+}
+
+-- FILE: UserResponse.java
+package com.example.dto;
+
+import lombok.Builder;
+import lombok.Value;
+@Value
+@Builder
+public class UserResponse {
+    Long userId;
+    String userName;
+    String email;
+    String roleName;
+}
+
+-- FILE: RoleRequest.java
+package com.example.dto;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.Data;
+
+@Data
+public class RoleRequest {
+
+    @NotBlank
+    @Size(max = 50)
+    private String roleName;
+
+    @Size(max = 255)
+    private String permissions;
+}
+
+-- FILE: RoleResponse.java
+package com.example.dto;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Builder;
+import lombok.Value;
+
+@Value
+@Builder
+public class RoleResponse {
+    //
+    @JsonProperty("Role Id")
+    Long roleId;
+    String roleName;
+    String permissions;
+}
+
+-- FILE: PatientRequest.java
+package com.example.dto;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.Data;
+
+import java.sql.Date;
+
+@Data
+public class PatientRequest {
+    @NotBlank
+    @Size(max = 150)
+    private String fullName;
+
+    @NotNull
+    private Date birthDate;
+
+    @Size(max = 255)
+    private String address;
+
+    @Size(max = 20)
+    private String phone;
+    
+    private Long userId;
+}
+
+-- FILE: PatientResponse.java
+package com.example.dto;
+
+import lombok.Builder;
+import lombok.Value;
+
+import java.sql.Date;
+
+@Value
+@Builder
+public class PatientResponse {
+    Long patientId;
+    String fullName;
+    Date birthDate;
+    String address;
+    String phone;
+    Long userId;
+    String userName;
+}
+
+-- FILE: NotificationRequest.java
+package com.example.dto;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.Data;
+
+import java.sql.Timestamp;
+@Data
+public class NotificationRequest {
+    @NotBlank
+    @Size(max = 50)
+    private String type;
+
+    @NotBlank
+    private String message;
+
+    @NotBlank
+    @Size(max = 20)
+    private String status;
+
+    private Timestamp sendDate;
+}
+
+-- FILE: NotificationResponse.java
+package com.example.dto;
+
+import lombok.Builder;
+import lombok.Value;
+
+import java.security.Timestamp;
+
+@Value
+@Builder
+public class NotificationResponse {
+    Long notificationId;
+    Long userId;
+    String type;
+    String message;
+    String status;
+    Timestamp sendDate;
+}
+
+-- FILE: MedicalEvidenceRequest.java
+package com.example.dto;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.Data;
+
+import java.security.Timestamp;
+
+@Data
+public class MedicalEvidenceRequest {
+    @NotBlank
+    @Size(max = 50)
+    private String fileType;
+
+    @NotBlank
+    private String fileUrl;
+
+    private String description;
+    private Timestamp uploadDate;
+}
+
+-- FILE: MedicalEvidenceResponse.java
+package com.example.dto;
+
+import lombok.Builder;
+import lombok.Value;
+
+import java.security.Timestamp;
+
+@Value
+@Builder
+public class MedicalEvidenceResponse {
+    Long evidenceId;
+    Long consultationId;
+    String fileType;
+    String fileUrl;
+    String description;
+    Timestamp uploadDate;
+}
+
+-- FILE: LocationRequest.java
+package com.example.dto;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+
+@Data
+public class LocationRequest {
+    @NotBlank
+    private String address;
+
+    @NotNull
+    private Double latitude;
+
+    @NotNull
+    private Double longitude;
+}
+
+-- FILE: LocationResponse.java
+package com.example.dto;
+
+import lombok.Builder;
+import lombok.Value;
+
+@Value
+@Builder
+public class LocationResponse {
+    Long locationId;
+    Long patientId;
+    String address;
+    Double latitude;
+    Double longitude;
+}
+
+-- FILE: ConsultationRequest.java
+package com.example.dto;
+
+import lombok.Data;
+
+import java.security.Timestamp;
+
+@Data
+public class ConsultationRequest {
+    private String diagnosis;
+    private String treatment;
+    private String observations;
+    private Timestamp consultationDate;
+}
+
+-- FILE: ConsultationResponse.java
+package com.example.dto;
+
+import lombok.Builder;
+import lombok.Value;
+
+import java.security.Timestamp;
+
+@Value
+@Builder
+public class ConsultationResponse {
+    Long consultationId;
+    Long appointmentId;
+    String diagnosis;
+    String treatment;
+    String observations;
+    Timestamp consultationDate;
+}
+
+-- END OF FILE --

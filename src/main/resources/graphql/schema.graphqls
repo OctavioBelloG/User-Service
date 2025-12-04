@@ -1,0 +1,55 @@
+type Query {
+  getPatientsPaged(page: Int, pageSize: Int): [PatientResponse]
+  searchPatientsByName(name: String!, page: Int, pageSize: Int): [PatientResponse]
+  getPatientsWithAppointments(page: Int, pageSize: Int): [PatientResponse]
+  findAll: [PatientResponse]
+  findById(patientId: ID!): PatientResponse
+}
+
+type Mutation {
+  create(req: PatientRequest!): PatientResponse
+  update(patientId: ID!, req: PatientRequest!): PatientResponse
+}
+
+
+
+type AddressType {
+    street: String
+    intNumber: String
+    extNumber: String
+    neighborhood: String
+    city: String
+    zipCode: String
+}
+
+input AddressInput {
+    street: String
+    intNumber: String
+    extNumber: String
+    neighborhood: String
+    city: String
+    zipCode: String
+}
+
+
+type PatientResponse {
+  patientId: ID!
+  firstName: String!
+  paternalSurname: String!
+  maternalSurname: String
+  birthDate: String
+  address: AddressType   # Ahora retorna un objeto
+  phone: String
+  userId: Int
+  userName: String
+}
+
+input PatientRequest {
+  firstName: String!
+  paternalSurname: String!
+  maternalSurname: String
+  birthDate: String!
+  address: AddressInput  # Ahora recibe un objeto
+  phone: String
+  userId: Int
+}
