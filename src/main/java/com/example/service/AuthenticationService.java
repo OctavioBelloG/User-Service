@@ -1,3 +1,4 @@
+
 package com.example.service;
 
 import com.example.dto.RegisterRequest;
@@ -24,15 +25,21 @@ public class AuthenticationService {
             throw new RuntimeException("Error: El email ya está en uso.");
         }
 
-   
-        Role defaultRole = roleRepository.findByRoleName("Doctor")
-                .orElseThrow(() -> new RuntimeException("Error: Rol predeterminado no encontrado."));
+        // 1. Recuperamos el ID del rol que viene del JSON (request.getRoleId())
+        // Si viene nulo, intentamos usar el 1 o el 2 por defecto.
+        Long roleIdToSearch = (request.getRoleId() != null) ? request.getRoleId() : 1L; 
+        
+        // 2. Buscamos por ID, NO por nombre
+        Role role = roleRepository.findById(roleIdToSearch)
+                .orElseThrow(() -> new RuntimeException("NUEVO ERROR: No existe el Rol con ID: " + roleIdToSearch));
 
         User user = new User();
-        user.setUsername(request.getUsername());
+        // Mapeamos los datos
+        user.setUsername(request.getUsername()); // Ojo: asegúrate que tu DTO usa @JsonProperty("userName") si envías camelCase
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setRole(defaultRole);
+        user.setRole(role);
+        user.setStatus(request.getStatus() != null ? request.getStatus() : "ACTIVE");
 
         return userRepository.save(user);
     }
