@@ -10,9 +10,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder; // IMPORTANTE
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional; // Importar
-import org.springframework.web.server.ResponseStatusException; // Importar
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
+
 import java.util.List;
 
 @Service
@@ -21,7 +23,7 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository repository;
-    // **NOTA**: Necesitarías un RoleRepository para validar si el roleId existe, omitido aquí.
+    private final PasswordEncoder passwordEncoder; // INYECCIÓN NECESARIA
 
     @Override
     public List<UserResponse> getUsersPaged(int page, int pageSize) {
@@ -32,17 +34,16 @@ public class UserServiceImpl implements UserService {
                 .toList();
     }
 
- @Override
-public List<UserResponse> getUsersByRolePaged(Long roleId, int page, int pageSize) {
-    PageRequest pageReq = PageRequest.of(page, pageSize);
-    
-    // AHORA LLAMA AL MÉTODO CON EL NOMBRE CORREGIDO
-    Page<User> users = repository.findByRoleRoleId(roleId, pageReq); 
-    
-    return users.getContent().stream()
-            .map(UserMapper::toResponse)
-            .toList();
-}
+    @Override
+    public List<UserResponse> getUsersByRolePaged(Long roleId, int page, int pageSize) {
+        PageRequest pageReq = PageRequest.of(page, pageSize);
+        // Asegúrate de que este método exista en tu repositorio
+        Page<User> users = repository.findByRoleRoleId(roleId, pageReq);
+        return users.getContent().stream()
+                .map(UserMapper::toResponse)
+                .toList();
+    }
+
     @Override
     public UserResponse findById(Long userId) {
         User user = repository.findById(userId)
@@ -55,11 +56,14 @@ public List<UserResponse> getUsersByRolePaged(Long roleId, int page, int pageSiz
         if (repository.existsByEmail(req.getEmail())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El email ya está registrado.");
         }
-        
+
         User userToSave = UserMapper.toEntity(req);
-        // Establecer el estado inicial si no viene en el Request (usar el default del modelo)
+        
+        // CORRECCIÓN CRÍTICA: Encriptar la contraseña antes de guardar
+        userToSave.setPassword(passwordEncoder.encode(req.getPassword()));
+
         if (req.getStatus() == null) {
-            userToSave.setStatus("ACTIVE"); 
+            userToSave.setStatus("ACTIVE");
         }
 
         User saved = repository.save(userToSave);
@@ -70,13 +74,20 @@ public List<UserResponse> getUsersByRolePaged(Long roleId, int page, int pageSiz
     public UserResponse update(Long userId, UserRequest req) {
         User existing = repository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found: " + userId));
-        
-        // Verificar unicidad del email solo si el email ha cambiado
+
         if (!existing.getEmail().equals(req.getEmail()) && repository.existsByEmail(req.getEmail())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El email ya está registrado por otro usuario.");
         }
 
+        // Mapear campos. OJO: Si UserMapper copia la password, asegúrate de encriptarla de nuevo
+        // o evita copiar la password en el update si viene vacía.
         UserMapper.copyToEntity(req, existing);
+        
+        // Opcional: Si el request trae password nueva, encriptarla de nuevo
+        if (req.getPassword() != null && !req.getPassword().isEmpty()) {
+             existing.setPassword(passwordEncoder.encode(req.getPassword()));
+        }
+
         User saved = repository.save(existing);
         return UserMapper.toResponse(saved);
     }
@@ -88,9 +99,9 @@ public List<UserResponse> getUsersByRolePaged(Long roleId, int page, int pageSiz
 
         String statusUpper = newStatus.toUpperCase();
         if (!statusUpper.equals("ACTIVE") && !statusUpper.equals("INACTIVE")) {
-             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El estado debe ser 'ACTIVE' o 'INACTIVE'.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El estado debe ser 'ACTIVE' o 'INACTIVE'.");
         }
-        
+
         existing.setStatus(statusUpper);
         User saved = repository.save(existing);
         return UserMapper.toResponse(saved);
