@@ -28,7 +28,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // CORRECCIÓN 1: Coincidir con tu AuthenticationController (@RequestMapping("/auth"))
                 .requestMatchers("/auth/**").permitAll()
-                
+                .requestMatchers("/api/v1/users/**").permitAll()
                 // Si decides cambiar tu controller a /api/v1/auth, descomenta esta línea:
                 // .requestMatchers("/api/v1/auth/**").permitAll()
 
